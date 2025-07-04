@@ -2,44 +2,50 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-# Page setup
-st.set_page_config(layout="wide", page_title="Motorcycle Safety Insights Dashboard")
+# Page configuration
+st.set_page_config(
+    layout="wide",
+    page_title="Motorcycle Safety Insights Dashboard"
+)
 
 # Title
-st.markdown("""
-    <h1 style='text-align: center;'>🏍️ MOTORCYCLE SAFETY INSIGHTS DASHBOARD</h1>
-""", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center;'>🏍️ MOTORCYCLE SAFETY INSIGHTS DASHBOARD</h1>", unsafe_allow_html=True)
+st.markdown("---")
 
-# ---- METRICS ----
-col1, col2, col3 = st.columns(3)
-with col1:
-    st.markdown("""
-        <div style='font-size: 1.8em; font-weight: bold;'>HELMET COMPLIANCE RATE (%)</div>
-        <div style='font-size: 3.0em; color: #1f77b4;'>78%</div>
-    """, unsafe_allow_html=True)
-with col2:
-    st.markdown("""
-        <div style='font-size: 1.8em; font-weight: bold;'>TOTAL MOTORCYCLE DETECTIONS</div>
-        <div style='font-size: 3.0em; color: #ff7f0e;'>1,242</div>
-    """, unsafe_allow_html=True)
-with col3:
-    st.markdown("""
-        <div style='font-size: 1.8em; font-weight: bold;'>CHILD PASSENGERS DETECTED</div>
-        <div style='font-size: 3.0em; color: #2ca02c;'>67</div>
-    """, unsafe_allow_html=True)
+# ---- METRICS SECTION ----
+st.markdown("### Key Safety Indicators")
+kpi1, kpi2, kpi3 = st.columns(3)
 
-# ---- FRAME + CHARTS SECTION ----
-left_col, right_col = st.columns([2 ,1.5])
+with kpi1:
+    st.metric(label="Helmet Compliance Rate (%)", value="78%")
+with kpi2:
+    st.metric(label="Total Motorcycle Detections", value="1,242")
+with kpi3:
+    st.metric(label="Child Passengers Detected", value="67")
 
-# Latest Detected Frame
+st.markdown("---")
+
+# ---- TWO-COLUMN LAYOUT ----
+left_col, right_col = st.columns([2, 1], gap="large")
+
+# LEFT: Latest Frame
 with left_col:
-    st.subheader("LATEST DETECTED FRAME")
-    st.image("latest_frame.jpg", width=1330)  # Reduced image size
+    st.subheader("📸 Latest Detected Frame")
+    st.image("latest_frame.jpg", caption="Most recent detection", use_column_width=True)
 
-# Right column: Pie + Line Chart
+# RIGHT: Charts Stacked Vertically
+st.subheader("🚨 Violation Types")
+bar_data = pd.DataFrame({
+    'Violation': ['No Helmet', 'Overloaded', 'Wrong Lane', 'No Mirrors'],
+    'Count': [130, 55, 22, 150]
+})
+fig_bar = px.bar(bar_data, x='Violation', y='Count', text='Count', color='Violation')
+fig_bar.update_traces(textposition='outside')
+fig_bar.update_layout(showlegend=False)
+st.plotly_chart(fig_bar, use_container_width=True)
 with right_col:
-    # Pie Chart - Mirror Status
-    st.subheader("PIE CHART OF MIRROR STATUS")
+    # Pie Chart
+    st.subheader("🪞 Mirror Status Breakdown")
     pie_data = pd.DataFrame({
         'Mirror Status': ['Both', 'Left Only', 'Right Only', 'None'],
         'Count': [520, 110, 90, 150]
@@ -47,8 +53,8 @@ with right_col:
     fig_pie = px.pie(pie_data, names='Mirror Status', values='Count', hole=0.4)
     st.plotly_chart(fig_pie, use_container_width=True)
 
-    # Line Chart - Helmet Usage Over Time
-    st.subheader("LINE CHART OF HELMET USAGE")
+    # Line Chart
+    st.subheader("⏱️ Helmet Usage Over Time")
     line_data = pd.DataFrame({
         'Date': pd.date_range(start="2025-05-28", periods=7),
         'Helmet Usage Rate (%)': [55, 60, 63, 70, 74, 76, 78]
@@ -56,3 +62,5 @@ with right_col:
     fig_line = px.line(line_data, x='Date', y='Helmet Usage Rate (%)', markers=True)
     st.plotly_chart(fig_line, use_container_width=True)
 
+    # Bar Chart
+    
