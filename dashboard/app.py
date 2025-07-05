@@ -574,7 +574,9 @@ def update_dashboard(time_range, heatmap_axis, trend_axis):
     )
 
 if __name__ == '__main__':
+
     app.run_server(debug=True, port=8050)
 
 app = dash.Dash(__name__)
 server = app.server  # This is important for deployment
+
