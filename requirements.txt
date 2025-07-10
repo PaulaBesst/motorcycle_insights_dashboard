@@ -1,9 +1,7 @@
-
-plotly==6.0.1
+numpy==1.24.4
 pandas==2.0.3
+plotly==6.0.1
 streamlit==1.37.1
-
-dash
-gunicorn
-numpy
-Pillow
+dash==2.14.2
+gunicorn==20.1.0
+Pillow==10.2.0
