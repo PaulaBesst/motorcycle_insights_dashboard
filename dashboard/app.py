@@ -9,6 +9,10 @@ import base64
 import io
 from PIL import Image
 
+import os
+
+port = int(os.environ.get("PORT", 8050))
+
 # Create dummy data (replace with actual data loading)
 def create_dummy_data():
     np.random.seed(42)  # For reproducible data
@@ -574,8 +578,7 @@ def update_dashboard(time_range, heatmap_axis, trend_axis):
     )
 
 if __name__ == '__main__':
-
-    app.run_server(debug=True, port=8050)
+    app.run_server(host="0.0.0.0", port=port, debug=True)
 
 app = dash.Dash(__name__)
 server = app.server  # This is important for deployment
