@@ -11,52 +11,11 @@ from PIL import Image
 
 import os
 
+# Load pre-generated data
+DATA_PATH = os.path.join(os.path.dirname(__file__), 'data.csv')
+df = pd.read_csv(DATA_PATH, parse_dates=["timestamp"])
+
 port = int(os.environ.get("PORT", 8050))
-
-# Create dummy data (replace with actual data loading)
-def create_dummy_data():
-    np.random.seed(42)  # For reproducible data
-    dates = pd.date_range(start='2024-01-01 07:00:00', periods=168, freq='1H')  # 1 week of hourly data
-    
-    data = []
-    for i, date in enumerate(dates):
-        # Create realistic patterns
-        hour = date.hour
-        base_compliance = 0.6 + 0.3 * np.sin((hour - 6) * np.pi / 12)  # Higher compliance during peak hours
-        noise = np.random.normal(0, 0.15)
-        compliance_rate = max(0.1, min(0.95, base_compliance + noise))
-        
-        total_detections = np.random.poisson(12) + 5  # 5-25 detections per period
-        helmet_compliance = int(total_detections * compliance_rate)
-        child_passengers = np.random.poisson(1.5) if np.random.random() < 0.4 else 0
-        
-        # Mirror status: no mirror, left mirror, right mirror
-        mirror_probs = np.random.dirichlet([2, 3, 4])  # More likely to have mirrors
-        mirror_counts = np.random.multinomial(total_detections, mirror_probs)
-        no_mirror = mirror_counts[0]
-        left_mirror = mirror_counts[1]
-        right_mirror = mirror_counts[2]
-        both_mirrors = mirror_counts[1] + mirror_counts[2]  # Count of riders with at least one mirror
-
-
-        data.append({
-            'timestamp': date,
-            'helmet_compliance': helmet_compliance,
-            'total_detections': total_detections,
-            'child_passengers': child_passengers,
-            'no_mirror': no_mirror,
-            'left_mirror': left_mirror,
-            'right_mirror': right_mirror,
-            'both_mirrors': both_mirrors,
-            'time_window': f"{date.strftime('%H:%M')}-{(date + timedelta(hours=1)).strftime('%H:%M')}",
-            'hour': hour,
-            'day_of_week': date.strftime('%A')
-        })
-    
-    return pd.DataFrame(data)
-
-# Load data
-df = create_dummy_data()
 
 # Calculate metrics
 df['helmet_compliance_rate'] = (df['helmet_compliance'] / df['total_detections'] * 100).round(1)
@@ -287,16 +246,16 @@ app.layout = html.Div([
 
 # Function to encode image for display
 def encode_image_for_display():
-    # Create a placeholder image with road scene
-    # In real implementation, you'd load your actual image here
     try:
-        # You can replace this with your actual image loading code
-        img = Image.open("latest_frame.jpg")
+        # Safely construct the image path relative to this script
+        image_path = os.path.join(os.path.dirname(__file__), "latest_frame.jpg")
+        img = Image.open(image_path)
         buffered = io.BytesIO()
         img.save(buffered, format="PNG")
         img_str = base64.b64encode(buffered.getvalue()).decode()
         return f"data:image/png;base64,{img_str}"
-    except:
+    except Exception as e:
+        print(f"Error loading image: {e}")
         return "data:image/png;base64,"
 
 # Callback for time range buttons
