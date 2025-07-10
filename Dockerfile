@@ -15,7 +15,7 @@ COPY . .
 WORKDIR /app/dashboard
 
 # Expose port if needed (for web apps like Flask/FastAPI/Streamlit)
-EXPOSE 8000
+EXPOSE 8050
 
 # Run the app
 CMD ["python", "app.py"]
